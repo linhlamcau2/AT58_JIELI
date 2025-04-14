@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "k9b_remote.h": "c"
+    },
+    "idf.portWin": "COM30"
+}
