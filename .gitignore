@@ -56,3 +56,6 @@ filenametags
 cscope.out
 *.bc
 *.ufw
+
+#obj build
+cpu/bd19/tools/app.bin

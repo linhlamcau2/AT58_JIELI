@@ -112,6 +112,10 @@ void check_power_on_key(void)
 #endif
 }
 
+static void central_timer_handle_test3(void)
+{
+    rd_light_check_CCT_Pin();
+}
 static void central_timer_handle_test(void)
 {
 
@@ -119,43 +123,8 @@ static void central_timer_handle_test(void)
     rd_light_check_save_cct();
     
     #if(CHANGE_CCT_BY_GPIO_EN)
-      rd_light_check_CCT_Pin(); // change cct by GPIO when power off
+    //   rd_light_check_CCT_Pin(); // change cct by GPIO when power off
     #endif
-    /*
-    static u8 led_stt_last =2;
-    static u16 dim_stt_last =0;
-     //led_stt != led_stt;
-    //  if(led_stt == 1) led_stt = 0;
-    //  else        led_stt = 1;
-    if(led_stt_last != led_stt){
-    //log_info("light \n");
-        led_stt_last =led_stt;
-        if(led_stt){
-        //  set_timer_pwm_duty(JL_TIMER2, 5000);   
-        // gpio_direction_output(IO_PORTA_09, led_stt);   //GPIO输出
-        // gpio_set_output_value(IO_PORTA_09, led_stt);   //GPIO输出
-        }
-        else{
-                    //  set_timer_pwm_duty(JL_TIMER2, 0);   
-         //gpio_direction_output(IO_PORTA_09, led_stt);   //GPIO输出
-        //   gpio_set_output_value(IO_PORTA_09, led_stt);   //GPIO输出
-        }
-    }
-    if(dim_stt_last != dim_10000){
-        if(dim_stt_last < dim_10000){
-            dim_stt_last += 10;
-            dim_stt_last = MIN(dim_stt_last, 10000);
-        }
-        if(dim_stt_last >dim_10000){
-            dim_stt_last -= 10;
-            dim_stt_last = MAX(0, dim_stt_last);
-        }
-
-        // set_timer_pwm_duty(JL_TIMER3, dim_stt_last);
-        //  set_timer_pwm_duty(JL_TIMER2, dim_stt_last/2);
-    }
-    */
-
 } 
 
 static void central_timer_handle_test2(void)
@@ -172,8 +141,12 @@ static void central_timer_handle_test2(void)
 
     }
     log_info("task main %d- Wdt:%d \n", sys_timer_get_ms(), wdt_get_time());
-    
 
+    // static uint8_t stt = 0;
+    // stt = !stt;
+    // gpio_write(PIN_TEST,0);
+    // gpio_write(DETECT_POWER_PIN,stt);
+   
 }
 void app_main()
 {
@@ -283,6 +256,7 @@ void app_main()
     //rd_light_set_dim_cct100(4, rd_flash_get_cct());
     sys_timer_add(NULL, central_timer_handle_test2, 1000);
     sys_timer_add(NULL, central_timer_handle_test, 10); 
+    sys_timer_add(NULL, central_timer_handle_test3, 5);
 #if TCFG_CHARGE_ENABLE
     set_charge_event_flag(1);
 #endif

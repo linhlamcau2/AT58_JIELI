@@ -11,6 +11,8 @@
 #define DIM_PIN         IO_PORT_DM 
 #define CCT_PIN         IO_PORTA_09
 #define DETECT_POWER_PIN       IO_PORT_DP // IO_PORTA_01
+
+#define PIN_TEST		IO_PORTB_09
 // IO_PORT_DP
 
 #define DIM_PWM_TIMER   JL_TIMER2
@@ -35,7 +37,7 @@
 #define FLASH_INITED_CODE 0x5A5A5A5A // code check flash inited
 
 
-#define CHANGE_CCT_BY_GPIO_EN 0 // 0: disable, 1: enable
+#define CHANGE_CCT_BY_GPIO_EN 1 // 0: disable, 1: enable
 typedef struct 
 {
     uint16_t dim_present;
@@ -63,6 +65,7 @@ void rd_flash_save_cct(uint8_t cct);
 void rd_light_check_save_cct(void);
 void rd_light_check_CCT_Pin(void);
 uint8_t get_next_cct_level(uint8_t cct_level_last);
+uint8_t get_next_dim_level(uint8_t dim);
 uint16_t rd_light_get_dim100(void);
 uint8_t rd_flash_get_cct(void);
 void rd_flash_save_timeOutFlag(uint8_t flag);

@@ -1,189 +1,243 @@
 // #include "system/app_core.h"
 #include "system/includes.h"
 #include "rd_light_common.h"
-#include  "K9B_remote.h"
+#include "K9B_remote.h"
 
 const uint16_t DIM_LUMEN_TO_PWM[101] = {
-    0,     1,     4,    9,    16,    25,    36,    49,    64,    81,
-   100,   121,   144,   169,   196,   225,   256,   289,   324,   361,
-   400,   441,   484,   529,   576,   625,   676,   729,   784,   841,
-   900,   961,  1024,  1089,  1156,  1225,  1296,  1369,  1444,  1521,
-  1600,  1681,  1764,  1849,  1936,  2025,  2116,  2209,  2304,  2401,
-  2500,  2601,  2704,  2809,  2916,  3025,  3136,  3249,  3364,  3481,
-  3600,  3721,  3844,  3969,  4096,  4225,  4356,  4489,  4624,  4761,
-  4900,  5041,  5184,  5329,  5476,  5625,  5776,  5929,  6084,  6241,
-  6400,  6561,  6724,  6889,  7056,  7225,  7396,  7569,  7744,  7921,
-  8100,  8281,  8464,  8649,  8836,  9025,  9216,  9409,  9604,  9801,
- 10000
-};
-volatile  rd_light_ctrl_t rd_light_ctrl_val = {0};
+    0, 1, 4, 9, 16, 25, 36, 49, 64, 81,
+    100, 121, 144, 169, 196, 225, 256, 289, 324, 361,
+    400, 441, 484, 529, 576, 625, 676, 729, 784, 841,
+    900, 961, 1024, 1089, 1156, 1225, 1296, 1369, 1444, 1521,
+    1600, 1681, 1764, 1849, 1936, 2025, 2116, 2209, 2304, 2401,
+    2500, 2601, 2704, 2809, 2916, 3025, 3136, 3249, 3364, 3481,
+    3600, 3721, 3844, 3969, 4096, 4225, 4356, 4489, 4624, 4761,
+    4900, 5041, 5184, 5329, 5476, 5625, 5776, 5929, 6084, 6241,
+    6400, 6561, 6724, 6889, 7056, 7225, 7396, 7569, 7744, 7921,
+    8100, 8281, 8464, 8649, 8836, 9025, 9216, 9409, 9604, 9801,
+    10000};
+volatile rd_light_ctrl_t rd_light_ctrl_val = {0};
 static void rd_gpio_init(void);
 void rd_flash_powerup_init(void);
 static inline uint16_t dim_cct_2_pwm(uint8_t dim_cct100);
-volatile  rd_Flash_powerUp_data_t rd_Flash_powerup_Val = {0};
-void rd_light_init(void){
-    rd_K9B_flash_init(); 
+volatile rd_Flash_powerUp_data_t rd_Flash_powerup_Val = {0};
+
+void rd_light_init(void)
+{
+    rd_K9B_flash_init();
     rd_flash_powerup_init();
-    rd_gpio_init();   
+    rd_gpio_init();
 
     printf("Rang Dong DownLight DM BLE V%02d.%02d.01", FIRMWARE_VER_H, FIRMWARE_VER_L);
 }
 
-static void rd_gpio_init(void){
-  timer_pwm_init(DIM_PWM_TIMER, DIM_PIN, PWM_HZ, (u32) dim_cct_2_pwm(5)); //1KHz 50%
+static void rd_gpio_init(void)
+{
+    timer_pwm_init(DIM_PWM_TIMER, DIM_PIN, PWM_HZ, (u32)dim_cct_2_pwm(5)); // 1KHz 50%
 
-  timer_pwm_init(CCT_PWM_TIMER, CCT_PIN, PWM_HZ, 0); //1KHz 50%
-  rd_light_ctrl_val.dim_present =5;
-  rd_light_ctrl_val.dim_target =5;
+    timer_pwm_init(CCT_PWM_TIMER, CCT_PIN, PWM_HZ, 0); // 1KHz 50%
+    rd_light_ctrl_val.dim_present = 5;
+    rd_light_ctrl_val.dim_target = 5;
 
-  #if(CHANGE_CCT_BY_GPIO_EN)
-    gpio_direction_input(DETECT_POWER_PIN);
-    gpio_set_pull_up(DETECT_POWER_PIN, 1);
-   // gpio_set_pull_down(DETECT_POWER_PIN, 0);
- #endif
+    // gpio_direction_output(PIN_TEST, 0);
+    // gpio_set_pull_up(PIN_TEST, 1);
+    // gpio_set_pull_down(PIN_TEST, 0);
 
-//   gpio_direction_input(DETECT_POWER_PIN);
-//   gpio_set_pull_down(DETECT_POWER_PIN, 1);
+#if (CHANGE_CCT_BY_GPIO_EN)
+    usb_iomode(0); // 先执行此函数，切换usb成gpio模式
+    gpio_set_pull_up(IO_PORT_DP, 1);
+    gpio_set_pull_down(IO_PORT_DP, 0);
+    gpio_set_direction(IO_PORT_DP, 1);
+    gpio_set_die(IO_PORT_DP, 1);
+    gpio_set_dieh(IO_PORT_DP, 0);
+
+#endif
 }
 
-
-static inline uint16_t dim_cct_2_pwm(uint8_t dim_cct100){
+static inline uint16_t dim_cct_2_pwm(uint8_t dim_cct100)
+{
     dim_cct100 = LIMIT_RANGE(dim_cct100, 0, 100);
-    return (dim_cct100*100);
+    return (dim_cct100 * 100);
 }
 
-static inline uint16_t dim_mapping_2_pwm(uint8_t dim_100){
+static inline uint16_t dim_mapping_2_pwm(uint8_t dim_100)
+{
     dim_100 = LIMIT_RANGE(dim_100, 0, 100);
     return (DIM_LUMEN_TO_PWM[dim_100]);
 }
 /**
- * set dim 100 
+ * set dim 100
  */
-void rd_light_set_dim100(uint8_t dim100_set){
+void rd_light_set_dim100(uint8_t dim100_set)
+{
     dim100_set = LIMIT_RANGE(dim100_set, 0, 100);
     rd_light_ctrl_val.dim_target = dim100_set;
 }
 
-void rd_light_set_cct100(uint8_t cct100_set){
+void rd_light_set_cct100(uint8_t cct100_set)
+{
     cct100_set = LIMIT_RANGE(cct100_set, 0, 100);
     rd_light_ctrl_val.cct_target = cct100_set;
 }
 
-uint16_t rd_light_get_dim100(void){
+uint16_t rd_light_get_dim100(void)
+{
     return rd_light_ctrl_val.dim_present;
 }
 
-uint16_t rd_light_get_cct100(void){
+uint16_t rd_light_get_cct100(void)
+{
     return rd_light_ctrl_val.cct_present;
 }
 
-void rd_light_set_dim_cct100(uint8_t dim100_set, uint8_t cct100_set){
+void rd_light_set_dim_cct100(uint8_t dim100_set, uint8_t cct100_set)
+{
     dim100_set = LIMIT_RANGE(dim100_set, 0, 100);
     cct100_set = LIMIT_RANGE(cct100_set, 0, 100);
     rd_light_ctrl_val.dim_target = dim100_set;
     rd_light_ctrl_val.cct_target = cct100_set;
 }
 
-void rd_light_check_ctrl_pwm(void){
+void rd_light_check_ctrl_pwm(void)
+{
     const uint8_t DIM_STEP = 1; // %
-    const uint8_t CCT_STEP  = 1; // %
-    
+    const uint8_t CCT_STEP = 1; // %
+
     // check cct pwm
-    if(rd_light_ctrl_val.cct_present != rd_light_ctrl_val.cct_target){
-        if(rd_light_ctrl_val.cct_present < rd_light_ctrl_val.cct_target){
+    if (rd_light_ctrl_val.cct_present != rd_light_ctrl_val.cct_target)
+    {
+        if (rd_light_ctrl_val.cct_present < rd_light_ctrl_val.cct_target)
+        {
             rd_light_ctrl_val.cct_present += CCT_STEP;
         }
-        if(rd_light_ctrl_val.cct_present > rd_light_ctrl_val.cct_target){
+        if (rd_light_ctrl_val.cct_present > rd_light_ctrl_val.cct_target)
+        {
             rd_light_ctrl_val.cct_present -= CCT_STEP;
         }
         set_timer_pwm_duty(CCT_PWM_TIMER, dim_cct_2_pwm(rd_light_ctrl_val.cct_present));
-     
-       // set_timer_pwm_duty(JL_TIMER2, dim_stt_last/2);
 
+        // set_timer_pwm_duty(JL_TIMER2, dim_stt_last/2);
     }
 
     // check dim pwm
-    if(rd_light_ctrl_val.dim_present != rd_light_ctrl_val.dim_target){
-        if(rd_light_ctrl_val.dim_present < rd_light_ctrl_val.dim_target){
+    if (rd_light_ctrl_val.dim_present != rd_light_ctrl_val.dim_target)
+    {
+        if (rd_light_ctrl_val.dim_present < rd_light_ctrl_val.dim_target)
+        {
             rd_light_ctrl_val.dim_present += DIM_STEP;
         }
-        if(rd_light_ctrl_val.dim_present > rd_light_ctrl_val.dim_target){
+        if (rd_light_ctrl_val.dim_present > rd_light_ctrl_val.dim_target)
+        {
             rd_light_ctrl_val.dim_present -= DIM_STEP;
         }
         set_timer_pwm_duty(DIM_PWM_TIMER, dim_cct_2_pwm(rd_light_ctrl_val.dim_present));
-        //set_timer_pwm_duty(DIM_PWM_TIMER, dim_mapping_2_pwm(rd_light_ctrl_val.dim_present));
+        // set_timer_pwm_duty(DIM_PWM_TIMER, dim_mapping_2_pwm(rd_light_ctrl_val.dim_present));
 
-       // set_timer_pwm_duty(JL_TIMER2, dim_stt_last/2);
+        // set_timer_pwm_duty(JL_TIMER2, dim_stt_last/2);
     }
-
 }
 
-void rd_light_check_CCT_Pin(void){
-    static uint8_t power_pin_stt[4] = {0}; // 0-1-2-3 is last to now
-    static uint8_t cct_stt = 0;
-
-    power_pin_stt[0] = power_pin_stt[1];
-    power_pin_stt[1] = power_pin_stt[2];
-    power_pin_stt[2] = power_pin_stt[3];  
-
-    power_pin_stt[3] = gpio_read(DETECT_POWER_PIN);
-
-    if( power_pin_stt[3] != 0 ){
-        rd_light_set_cct100(0);
-    }
-
-    // if( (power_pin_stt[0] == 0) && (power_pin_stt[1] == 0) && (power_pin_stt[2] != 0) && (power_pin_stt[3] != 0) ){
-    //     cct_stt = get_next_cct_level(cct_stt);
-    //     rd_light_set_cct100(cct_stt);
-    //     rd_flash_save_cct(cct_stt);
-    //     printf("CCT pin change to %d\n", cct_stt);
-    // }
-    
-}
-void rd_light_check_save_cct(void){
+#define NUM_CHECK_POWER 8
+void rd_light_check_CCT_Pin(void)
+{
+    static u16 cct_stt = 0;
     static uint32_t clk_time_last_ms = 0;
-    static uint8_t change_cct_timeout = 0;
-    if(clk_time_last_ms > sys_timer_get_ms()){
+    static uint8_t count = 0;
+    if (sys_timer_get_ms() > 600)
+    {
+        if (gpio_read(DETECT_POWER_PIN))
+        {
+            count++;
+            if (count == NUM_CHECK_POWER)               //mat nguon AC
+            {
+                if(sys_timer_get_ms() - clk_time_last_ms < 6000)
+                {
+                    cct_stt = get_next_cct_level(rd_light_ctrl_val.cct_target);
+                    rd_light_set_cct100(cct_stt);
+                    rd_flash_save_cct(cct_stt);
+                }    
+                clk_time_last_ms = sys_timer_get_ms();
+            }
+            else if (count > NUM_CHECK_POWER)
+                count = NUM_CHECK_POWER + 1;
+        }
+        else
+        {
+            count = 0;
+        }
+    }
+
+    // if(need_keep_ctt && rd_Flash_powerup_Val.cct_last == cct_stt && sys_timer_get_ms() - clk_time_last_ms > 6000)
+    // {
+    //     need_keep_ctt = 0;
+    //     rd_flash_save_cct(cct_stt_pre);
+    // }
+
+    else
+    {
+        count = 0;
+    }
+}
+void rd_light_check_save_cct(void)
+{
+    static uint32_t clk_time_last_ms = 0;
+    // static uint8_t change_cct_timeout = 0;
+    if (clk_time_last_ms > sys_timer_get_ms())
+    {
         clk_time_last_ms = sys_timer_get_ms();
     }
 
-    if(sys_timer_get_ms() - clk_time_last_ms > 3000){
+    if (sys_timer_get_ms() - clk_time_last_ms > 3000)
+    {
 
         clk_time_last_ms = sys_timer_get_ms();
-        if( (rd_Flash_powerup_Val.cct_last != rd_light_ctrl_val.cct_present)){
-            rd_flash_save_cct(rd_light_ctrl_val.cct_present);
-       }
+        if ((rd_Flash_powerup_Val.cct_last != rd_light_ctrl_val.cct_target))
+        {
+            rd_flash_save_cct(rd_light_ctrl_val.cct_target);
+        }
     }
-
 
     /*----------------------Check timeout cct-----------------*/
-    if( (change_cct_timeout == 0) && (sys_timer_get_ms() > TIMEOUT_CHANGE_CCT_MS)){
-        change_cct_timeout = 1;
-        rd_flash_save_timeOutFlag(0);
-        printf("------------------time out cct-------------------\n");
-    }
+    // if ((change_cct_timeout == 0) && (sys_timer_get_ms() > TIMEOUT_CHANGE_CCT_MS))
+    // {
+    //     change_cct_timeout = 1;
+    //     // rd_flash_save_timeOutFlag(0);
+    //     printf("------------------time out cct-------------------\n");
+    // }
 }
 
-uint8_t get_next_cct_level(uint8_t cct_level_last){
+uint8_t get_next_cct_level(uint8_t cct_level_last)
+{
     switch (cct_level_last)
     {
     case CCT_LEVEL1:
         return CCT_LEVEL2;
-        break;
     case CCT_LEVEL2:
         return CCT_LEVEL3;
-        break;
     case CCT_LEVEL3:
         return CCT_LEVEL1;
-        break;
     default:
         return CCT_LEVEL1;
-        break;
+    }
+}
+
+uint8_t get_next_dim_level(uint8_t dim)
+{
+    switch (dim)
+    {
+    case DIM_LEVEL1:
+        return DIM_LEVEL2;
+    case DIM_LEVEL2:
+        return DIM_LEVEL3;
+    case DIM_LEVEL3:
+        return DIM_LEVEL1;
+    default:
+        return DIM_LEVEL1;
     }
 }
 /*----------------------flash powerup-----------------*/
 
-void rd_flash_powerup_saveDF(void){
+void rd_flash_powerup_saveDF(void)
+{
     rd_Flash_powerup_Val.Factory_Check = FLASH_INITED_CODE;
     rd_Flash_powerup_Val.dim_last = DIM_POWERUP_DF;
     rd_Flash_powerup_Val.cct_last = CCT_POWERUP_DF;
@@ -194,38 +248,43 @@ void rd_flash_powerup_saveDF(void){
     printf("flash powerup save default\n");
 }
 
-void rd_flash_powerup_init(void){
+void rd_flash_powerup_init(void)
+{
     int ret = syscfg_read(CFG_VM_RD_POWERUP, &rd_Flash_powerup_Val, sizeof(rd_Flash_powerup_Val));
     printf("flash powerup read [write:%d]", ret);
 
-    if(FLASH_INITED_CODE != rd_Flash_powerup_Val.Factory_Check){
+    if (FLASH_INITED_CODE != rd_Flash_powerup_Val.Factory_Check)
+    {
         rd_flash_powerup_saveDF();
         syscfg_read(CFG_VM_RD_POWERUP, &rd_Flash_powerup_Val, sizeof(rd_Flash_powerup_Val));
     }
     printf("dim_last:%d - cct_last:%d - eraser_counter:%d\n", rd_Flash_powerup_Val.dim_last, rd_Flash_powerup_Val.cct_last, rd_Flash_powerup_Val.eraser_counter);
 
-    if(rd_Flash_powerup_Val.timeout_powerup_flag){
-        rd_Flash_powerup_Val.cct_last = get_next_cct_level(rd_Flash_powerup_Val.cct_last);
-        printf("Set next cct level:%d\n", rd_Flash_powerup_Val.cct_last);
-        rd_flash_save_cct(rd_Flash_powerup_Val.cct_last);
-    }
-    rd_flash_save_timeOutFlag(1);
-
+    // if (rd_Flash_powerup_Val.timeout_powerup_flag)
+    // {
+    //     rd_Flash_powerup_Val.cct_last = get_next_cct_level(rd_Flash_powerup_Val.cct_last);
+    //     printf("Set next cct level:%d\n", rd_Flash_powerup_Val.cct_last);
+    //     rd_flash_save_cct(rd_Flash_powerup_Val.cct_last);
+    // }
+    // rd_flash_save_timeOutFlag(1);
 }
 
-void rd_flash_save_timeOutFlag(uint8_t flag){
+void rd_flash_save_timeOutFlag(uint8_t flag)
+{
     rd_Flash_powerup_Val.timeout_powerup_flag = flag;
     rd_Flash_powerup_Val.eraser_counter++;
     syscfg_write(CFG_VM_RD_POWERUP, &rd_Flash_powerup_Val, sizeof(rd_Flash_powerup_Val));
     printf("save time out flag:%d\n", flag);
 }
-void rd_flash_save_cct(uint8_t cct){
+void rd_flash_save_cct(uint8_t cct)
+{
     rd_Flash_powerup_Val.cct_last = cct;
     rd_Flash_powerup_Val.eraser_counter++;
     syscfg_write(CFG_VM_RD_POWERUP, &rd_Flash_powerup_Val, sizeof(rd_Flash_powerup_Val));
     printf("save cct:%d\n", cct);
 }
 
-uint8_t rd_flash_get_cct(void){
+uint8_t rd_flash_get_cct(void)
+{
     return rd_Flash_powerup_Val.cct_last;
 }
