@@ -209,14 +209,14 @@ uint8_t get_next_cct_level(uint8_t cct_level_last)
 {
     switch (cct_level_last)
     {
-    case CCT_LEVEL1:
+    case CCT_LEVEL3:
         return CCT_LEVEL2;
     case CCT_LEVEL2:
+        return CCT_LEVEL1;
+    case CCT_LEVEL1:
         return CCT_LEVEL3;
-    case CCT_LEVEL3:
-        return CCT_LEVEL1;
     default:
-        return CCT_LEVEL1;
+        return CCT_LEVEL3;
     }
 }
 

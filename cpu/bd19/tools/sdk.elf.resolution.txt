@@ -3062,7 +3062,6 @@ objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o
 -r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,RD_K9B_ScanOnOff,pl
 -r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,check_mac_seved,pl
 -r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,clock_time_exceed_ms,
--r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,get_next_dim_level,l
 -r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,rd_light_set_dim100,l
 -r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,CODE_CHECK_FLASH,pl
 -r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,rd_Flash_K9BData_Val,pl
