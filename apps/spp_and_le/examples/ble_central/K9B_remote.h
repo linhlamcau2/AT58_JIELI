@@ -98,7 +98,7 @@ void RD_K9B_TimeOutScan(void);
 void RD_K9B_SaveOnOff(uint32_t macDevice, uint8_t key);
 void RD_Flash_DeleteAllK9BOnOff(uint8_t relay_index);
 uint8_t RD_K9B_ScanOnOff(uint32_t macDevice, uint8_t key, uint32_t counter);
-void RD_K9B_check_saveAndDelete(uint32_t macDevice, uint32_t counter, uint8_t type_k9b,uint8_t button_id);
+uint8_t RD_K9B_check_saveAndDelete(uint32_t macDevice, uint32_t counter, uint8_t type_k9b,uint8_t button_id);
 
 /*----------------------------------------K9B and HC mode in Rang Dong smart home--------------------- */
 /*

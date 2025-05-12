@@ -69,4 +69,7 @@ uint8_t get_next_dim_level(uint8_t dim);
 uint16_t rd_light_get_dim100(void);
 uint8_t rd_flash_get_cct(void);
 void rd_flash_save_timeOutFlag(uint8_t flag);
+
+void rd_blink();
+void rd_set_blink();
 #endif //RD_LIGHT_COMMON_H

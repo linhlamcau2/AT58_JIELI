@@ -2083,6 +2083,7 @@ objs/apps/spp_and_le/app_main.c.o
 -r=objs/apps/spp_and_le/app_main.c.o,rd_light_set_dim_cct100,l
 -r=objs/apps/spp_and_le/app_main.c.o,rd_flash_get_cct,l
 -r=objs/apps/spp_and_le/app_main.c.o,wdt_get_time,l
+-r=objs/apps/spp_and_le/app_main.c.o,rd_blink,l
 -r=objs/apps/spp_and_le/app_main.c.o,rd_light_check_ctrl_pwm,l
 -r=objs/apps/spp_and_le/app_main.c.o,rd_light_check_save_cct,l
 -r=objs/apps/spp_and_le/app_main.c.o,rd_light_check_CCT_Pin,l
@@ -3018,8 +3019,10 @@ objs/apps/spp_and_le/examples/ble_central/rd_light_common.c.o
 -r=objs/apps/spp_and_le/examples/ble_central/rd_light_common.c.o,rd_light_get_dim100,pl
 -r=objs/apps/spp_and_le/examples/ble_central/rd_light_common.c.o,rd_light_get_cct100,pl
 -r=objs/apps/spp_and_le/examples/ble_central/rd_light_common.c.o,rd_light_set_dim_cct100,pl
--r=objs/apps/spp_and_le/examples/ble_central/rd_light_common.c.o,rd_light_check_ctrl_pwm,pl
+-r=objs/apps/spp_and_le/examples/ble_central/rd_light_common.c.o,rd_blink,pl
 -r=objs/apps/spp_and_le/examples/ble_central/rd_light_common.c.o,set_timer_pwm_duty,l
+-r=objs/apps/spp_and_le/examples/ble_central/rd_light_common.c.o,rd_set_blink,pl
+-r=objs/apps/spp_and_le/examples/ble_central/rd_light_common.c.o,rd_light_check_ctrl_pwm,pl
 -r=objs/apps/spp_and_le/examples/ble_central/rd_light_common.c.o,rd_light_check_CCT_Pin,pl
 -r=objs/apps/spp_and_le/examples/ble_central/rd_light_common.c.o,sys_timer_get_ms,l
 -r=objs/apps/spp_and_le/examples/ble_central/rd_light_common.c.o,gpio_read,l
@@ -3057,6 +3060,7 @@ objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o
 -r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,RD_K9B_SaveOnOff_yet,pl
 -r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,RD_K9B_SaveOnOff,pl
 -r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,RD_K9B_check_saveAndDelete,pl
+-r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,rd_set_blink,l
 -r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,rd_light_set_dim_cct100,l
 -r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,RD_Flash_DeleteAllK9BOnOff,pl
 -r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,RD_K9B_ScanOnOff,pl

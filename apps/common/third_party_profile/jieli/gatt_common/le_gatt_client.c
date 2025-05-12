@@ -854,9 +854,9 @@ static bool __resolve_adv_report(adv_report_t *report_pt, u16 len)
                     counter_last = KP9_DataRec.Counter;
                     printf("K9B ---MAC: %08x - count:%d -key%x \n",MacK9B_Buff, KP9_DataRec.Counter, KP9_DataRec.key);
 
-                    RD_K9B_check_saveAndDelete(MacK9B_Buff, KP9_DataRec.Counter, KP9_DataRec.type_device, KP9_DataRec.key);
+                    uint8_t err = RD_K9B_check_saveAndDelete(MacK9B_Buff, KP9_DataRec.Counter, KP9_DataRec.type_device, KP9_DataRec.key);
 
-                    RD_K9B_ScanOnOff(MacK9B_Buff, KP9_DataRec.key, KP9_DataRec.Counter);
+                    if(err ==0) RD_K9B_ScanOnOff(MacK9B_Buff, KP9_DataRec.key, KP9_DataRec.Counter);
                     k9B_flag=1;
                     // if(1 == KP9_DataRec.key) rd_light_set_dim_cct100(100, 0); //set_led_stt(1);
                     // if(2 == KP9_DataRec.key) rd_light_set_dim_cct100(0, 100); //set_led_stt(0);

@@ -21,6 +21,8 @@ void rd_flash_powerup_init(void);
 static inline uint16_t dim_cct_2_pwm(uint8_t dim_cct100);
 volatile rd_Flash_powerUp_data_t rd_Flash_powerup_Val = {0};
 
+static uint8_t count_blink = 0;
+
 void rd_light_init(void)
 {
     rd_K9B_flash_init();
@@ -97,6 +99,21 @@ void rd_light_set_dim_cct100(uint8_t dim100_set, uint8_t cct100_set)
     rd_light_ctrl_val.cct_target = cct100_set;
 }
 
+
+void rd_blink()
+{
+    if(count_blink)
+    {
+        set_timer_pwm_duty(DIM_PWM_TIMER, dim_cct_2_pwm((count_blink %2) ? 100 : 0));
+        count_blink--;
+    }
+}
+
+void rd_set_blink()
+{
+    count_blink = 2;
+}
+
 void rd_light_check_ctrl_pwm(void)
 {
     const uint8_t DIM_STEP = 1; // %
@@ -119,7 +136,7 @@ void rd_light_check_ctrl_pwm(void)
     }
 
     // check dim pwm
-    if (rd_light_ctrl_val.dim_present != rd_light_ctrl_val.dim_target)
+    if (count_blink == 0 && rd_light_ctrl_val.dim_present != rd_light_ctrl_val.dim_target)
     {
         if (rd_light_ctrl_val.dim_present < rd_light_ctrl_val.dim_target)
         {

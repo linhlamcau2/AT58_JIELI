@@ -142,6 +142,7 @@ static void central_timer_handle_test2(void)
     }
     log_info("task main %d- Wdt:%d \n", sys_timer_get_ms(), wdt_get_time());
 
+    rd_blink();
     // static uint8_t stt = 0;
     // stt = !stt;
     // gpio_write(PIN_TEST,0);

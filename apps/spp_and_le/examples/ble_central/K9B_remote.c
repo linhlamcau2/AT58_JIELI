@@ -191,7 +191,7 @@ void RD_K9B_SaveOnOff(uint32_t macDevice, uint8_t key)
 	// Sw_Flash_Data_Val
 }
 
-void RD_K9B_check_saveAndDelete(uint32_t macDevice, uint32_t counter, uint8_t type_k9b, uint8_t button_id)
+uint8_t RD_K9B_check_saveAndDelete(uint32_t macDevice, uint32_t counter, uint8_t type_k9b, uint8_t button_id)
 {
 	static u32 macDevice_last = 0;
 	static u32 counter_last = 0;
@@ -204,6 +204,8 @@ void RD_K9B_check_saveAndDelete(uint32_t macDevice, uint32_t counter, uint8_t ty
 	// 	first_time_check_flag =1;
 	// 	macDevice_last = macDevice;
 	// }
+
+	uint8_t err = 0;
 	if (macDevice != macDevice_last)
 	{ // press other than last remote will reset count pair and delete
 		count_clear = 0;
@@ -225,6 +227,8 @@ void RD_K9B_check_saveAndDelete(uint32_t macDevice, uint32_t counter, uint8_t ty
 					printf("save-MAC:%08x \n", macDevice);
 					rd_K9B_flash_save(macDevice);
 					RD_K9B_Pair_OnOffClearFlag();
+					rd_set_blink();
+					err = 1;
 				}
 			}
 			else
@@ -248,6 +252,7 @@ void RD_K9B_check_saveAndDelete(uint32_t macDevice, uint32_t counter, uint8_t ty
 					rd_K9B_flash_delete(macDevice);
 					RD_K9B_Pair_OnOffClearFlag();
 					rd_light_set_dim_cct100(DIM_LEVEL3, CCT_LEVEL1);
+					// err = 1;
 				}
 			}
 			else
@@ -264,6 +269,7 @@ void RD_K9B_check_saveAndDelete(uint32_t macDevice, uint32_t counter, uint8_t ty
 	macDevice_last = macDevice;
 	counter_last = counter;
 	button_id_last = button_id;
+	return err;
 }
 
 /**
