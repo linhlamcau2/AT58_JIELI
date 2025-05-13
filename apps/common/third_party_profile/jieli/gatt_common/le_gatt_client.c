@@ -828,7 +828,6 @@ static bool __resolve_adv_report(adv_report_t *report_pt, u16 len)
     client_match_cfg_t *match_cfg = NULL;
 
     #if(1)
-    u8 k9B_flag=0;
     u8 k9b_adv_filler =0;
     static uint32_t k9b_mac_last =0;
     static uint32_t counter_last=0;
@@ -854,12 +853,10 @@ static bool __resolve_adv_report(adv_report_t *report_pt, u16 len)
                     counter_last = KP9_DataRec.Counter;
                     printf("K9B ---MAC: %08x - count:%d -key%x \n",MacK9B_Buff, KP9_DataRec.Counter, KP9_DataRec.key);
 
-                    RD_K9B_check_saveAndDelete(MacK9B_Buff, KP9_DataRec.Counter, KP9_DataRec.type_device, KP9_DataRec.key);
+                    // RD_K9B_check_saveAndDelete(MacK9B_Buff, KP9_DataRec.Counter, KP9_DataRec.type_device, KP9_DataRec.key);
 
-                    RD_K9B_ScanOnOff(MacK9B_Buff, KP9_DataRec.key, KP9_DataRec.Counter);
-                    k9B_flag=1;
-                    // if(1 == KP9_DataRec.key) rd_light_set_dim_cct100(100, 0); //set_led_stt(1);
-                    // if(2 == KP9_DataRec.key) rd_light_set_dim_cct100(0, 100); //set_led_stt(0);
+                    // RD_K9B_ScanOnOff(MacK9B_Buff, KP9_DataRec.key, KP9_DataRec.Counter);
+                    rd_send_message_to_queue(MacK9B_Buff, KP9_DataRec.key, KP9_DataRec.Counter, KP9_DataRec.type_device);
                     put_buf(report_pt->data, report_pt->length);
                 }
             }

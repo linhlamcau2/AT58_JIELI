@@ -1,6 +1,8 @@
 {
     "files.associations": {
-        "k9b_remote.h": "c"
+        "Makefile": "c",
+        "k9b_remote.h": "c",
+        "rd_queue.h": "c"
     },
     "idf.portWin": "COM30"
 }

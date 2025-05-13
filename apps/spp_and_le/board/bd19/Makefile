@@ -362,6 +362,7 @@ c_SRC_FILES := \
 	../../../../apps/spp_and_le/examples/ble_central/ble_central.c \
 	../../../../apps/spp_and_le/examples/ble_central/ble_central_server.c \
 	../../../../apps/spp_and_le/examples/ble_central/rd_light_common.c \
+	../../../../apps/spp_and_le/examples/ble_central/rd_queue.c \
 	../../../../apps/spp_and_le/examples/ble_central/K9B_remote.c \
 	../../../../apps/spp_and_le/examples/conn_24g/app_conn_24g.c \
 	../../../../apps/spp_and_le/examples/conn_24g/ble_24g_client.c \

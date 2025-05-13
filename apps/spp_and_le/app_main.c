@@ -112,6 +112,11 @@ void check_power_on_key(void)
 #endif
 }
 
+static void central_timer_handle_test4(void)
+{
+    rd_handle_queue_message();
+}
+
 static void central_timer_handle_test3(void)
 {
     rd_light_check_CCT_Pin();
@@ -142,6 +147,7 @@ static void central_timer_handle_test2(void)
     }
     log_info("task main %d- Wdt:%d \n", sys_timer_get_ms(), wdt_get_time());
 
+    rd_blink_led();
     // static uint8_t stt = 0;
     // stt = !stt;
     // gpio_write(PIN_TEST,0);
@@ -252,11 +258,11 @@ void app_main()
 
     rd_light_init();
 
-    RD_K9B_Pair_OnOffSetFlag(1);
     //rd_light_set_dim_cct100(4, rd_flash_get_cct());
     sys_timer_add(NULL, central_timer_handle_test2, 1000);
     sys_timer_add(NULL, central_timer_handle_test, 10); 
     sys_timer_add(NULL, central_timer_handle_test3, 5);
+    sys_timer_add(NULL, central_timer_handle_test4, 500);
 #if TCFG_CHARGE_ENABLE
     set_charge_event_flag(1);
 #endif

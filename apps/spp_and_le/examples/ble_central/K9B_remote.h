@@ -74,36 +74,39 @@ typedef struct{
 typedef struct
 {
 	uint32_t Factory_Check;
+	uint32_t total;
 	uint32_t MacK9B[MAX_NUM_K9BHC];
-	uint32_t arraySave_Next;
 } rd_Flash_K9BData_t;
+
+typedef struct
+{
+	uint32_t macDevice;
+	uint32_t counter;
+	uint8_t key;
+	uint8_t type;
+} message_t;
+
+#define MAX_QUEUE_SIZE 20
+#define QUEUE_SIZE sizeof(message_t)
+
+enum
+{
+	MSG_NULL = 0,
+	MSG_ADD_K9B,
+	MSG_DELETE_K9B,
+	MSG_CTRL_K9B,
+};
+
+typedef void (*handle_event_t)(message_t message);
+
 void rd_K9B_flash_init(void);
-
-
-
-
-/*
- * uint8_t Button_ID  1->
- */
-void RD_K9B_Pair_OnOffSetFlag(uint8_t Button_ID);
-/*
- * return Button_ID 1->4 if Pair_Flag on,
- */
-uint8_t RD_K9B_Pair_OnOffGetFlag(void);
-void RD_K9B_Pair_OnOffClearFlag(void);
-/*
- * uint8_t Button_ID 1-->4
- */
-void RD_K9B_TimeOutScan(void);
 void RD_K9B_SaveOnOff(uint32_t macDevice, uint8_t key);
 void RD_Flash_DeleteAllK9BOnOff(uint8_t relay_index);
 uint8_t RD_K9B_ScanOnOff(uint32_t macDevice, uint8_t key, uint32_t counter);
 void RD_K9B_check_saveAndDelete(uint32_t macDevice, uint32_t counter, uint8_t type_k9b,uint8_t button_id);
 
-/*----------------------------------------K9B and HC mode in Rang Dong smart home--------------------- */
-/*
-void RD_K9B_PairHCSet(uint8_t pairStt, uint16_t K9BAdd);
-void RD_K9B_CheckScanK9BHc(uint32_t K9BMac_Buff, uint8_t Num_Of_Button,  signed char  rssi);
-uint8_t RD_K9B_ScanPress2HC(uint32_t macDevice, uint8_t key, uint32_t par_signature);
-*/
+void rd_send_message_to_queue(uint32_t macDevice, uint8_t key, uint32_t counter, uint8_t type);
+void rd_handle_queue_message();
+void rd_init_queue_message(void);
+
 #endif /* VENDOR_RANG_DONG_K9B_REMOTE_H_ */

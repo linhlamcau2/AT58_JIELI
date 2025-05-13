@@ -26,7 +26,7 @@ void rd_light_init(void)
     rd_K9B_flash_init();
     rd_flash_powerup_init();
     rd_gpio_init();
-
+    rd_init_queue_message();
     printf("Rang Dong DownLight DM BLE V%02d.%02d.01", FIRMWARE_VER_H, FIRMWARE_VER_L);
 }
 
@@ -37,11 +37,6 @@ static void rd_gpio_init(void)
     timer_pwm_init(CCT_PWM_TIMER, CCT_PIN, PWM_HZ, 0); // 1KHz 50%
     rd_light_ctrl_val.dim_present = 5;
     rd_light_ctrl_val.dim_target = 5;
-
-    // gpio_direction_output(PIN_TEST, 0);
-    // gpio_set_pull_up(PIN_TEST, 1);
-    // gpio_set_pull_down(PIN_TEST, 0);
-
 #if (CHANGE_CCT_BY_GPIO_EN)
     usb_iomode(0); // 先执行此函数，切换usb成gpio模式
     gpio_set_pull_up(IO_PORT_DP, 1);
@@ -97,6 +92,24 @@ void rd_light_set_dim_cct100(uint8_t dim100_set, uint8_t cct100_set)
     rd_light_ctrl_val.cct_target = cct100_set;
 }
 
+uint8_t count_blink = 0;
+
+void rd_set_blink(void)
+{
+    count_blink = 2;
+}
+
+void rd_blink_led()
+{
+    if(count_blink == 0)
+    {
+        return;
+    }
+    uint16_t dim_stt = (count_blink % 2) ? 100 : 0;
+    set_timer_pwm_duty(DIM_PWM_TIMER, dim_cct_2_pwm(dim_stt));
+    count_blink--;
+}
+
 void rd_light_check_ctrl_pwm(void)
 {
     const uint8_t DIM_STEP = 1; // %
@@ -119,7 +132,7 @@ void rd_light_check_ctrl_pwm(void)
     }
 
     // check dim pwm
-    if (rd_light_ctrl_val.dim_present != rd_light_ctrl_val.dim_target)
+    if (count_blink == 0 && rd_light_ctrl_val.dim_present != rd_light_ctrl_val.dim_target)
     {
         if (rd_light_ctrl_val.dim_present < rd_light_ctrl_val.dim_target)
         {
@@ -288,3 +301,4 @@ uint8_t rd_flash_get_cct(void)
 {
     return rd_Flash_powerup_Val.cct_last;
 }
+
