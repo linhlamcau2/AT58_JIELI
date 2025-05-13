@@ -856,7 +856,7 @@ static bool __resolve_adv_report(adv_report_t *report_pt, u16 len)
                     // RD_K9B_check_saveAndDelete(MacK9B_Buff, KP9_DataRec.Counter, KP9_DataRec.type_device, KP9_DataRec.key);
 
                     // RD_K9B_ScanOnOff(MacK9B_Buff, KP9_DataRec.key, KP9_DataRec.Counter);
-                    rd_send_message_to_queue(MacK9B_Buff, KP9_DataRec.key, KP9_DataRec.Counter, KP9_DataRec.type_device);
+                    // rd_send_message_to_queue(MacK9B_Buff, KP9_DataRec.key, KP9_DataRec.Counter, KP9_DataRec.type_device);
                     put_buf(report_pt->data, report_pt->length);
                 }
             }

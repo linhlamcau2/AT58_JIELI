@@ -26,7 +26,7 @@ void rd_light_init(void)
     rd_K9B_flash_init();
     rd_flash_powerup_init();
     rd_gpio_init();
-    rd_init_queue_message();
+    // rd_init_queue_message();
     printf("Rang Dong DownLight DM BLE V%02d.%02d.01", FIRMWARE_VER_H, FIRMWARE_VER_L);
 }
 
@@ -152,43 +152,8 @@ void rd_light_check_ctrl_pwm(void)
 #define NUM_CHECK_POWER 8
 void rd_light_check_CCT_Pin(void)
 {
-    static u16 cct_stt = 0;
-    static uint32_t clk_time_last_ms = 0;
-    static uint8_t count = 0;
-    if (sys_timer_get_ms() > 600)
-    {
-        if (gpio_read(DETECT_POWER_PIN))
-        {
-            count++;
-            if (count == NUM_CHECK_POWER)               //mat nguon AC
-            {
-                if(sys_timer_get_ms() - clk_time_last_ms < 6000)
-                {
-                    cct_stt = get_next_cct_level(rd_light_ctrl_val.cct_target);
-                    rd_light_set_cct100(cct_stt);
-                    rd_flash_save_cct(cct_stt);
-                }    
-                clk_time_last_ms = sys_timer_get_ms();
-            }
-            else if (count > NUM_CHECK_POWER)
-                count = NUM_CHECK_POWER + 1;
-        }
-        else
-        {
-            count = 0;
-        }
-    }
-
-    // if(need_keep_ctt && rd_Flash_powerup_Val.cct_last == cct_stt && sys_timer_get_ms() - clk_time_last_ms > 6000)
-    // {
-    //     need_keep_ctt = 0;
-    //     rd_flash_save_cct(cct_stt_pre);
-    // }
-
-    else
-    {
-        count = 0;
-    }
+    int stt = gpio_read(DETECT_POWER_PIN);
+    set_timer_pwm_duty(DIM_PWM_TIMER, dim_cct_2_pwm( stt ? 100 : 0));
 }
 void rd_light_check_save_cct(void)
 {

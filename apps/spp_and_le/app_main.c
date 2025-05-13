@@ -124,7 +124,7 @@ static void central_timer_handle_test3(void)
 static void central_timer_handle_test(void)
 {
 
-    rd_light_check_ctrl_pwm();
+    // rd_light_check_ctrl_pwm();
     rd_light_check_save_cct();
     
     #if(CHANGE_CCT_BY_GPIO_EN)
@@ -261,8 +261,8 @@ void app_main()
     //rd_light_set_dim_cct100(4, rd_flash_get_cct());
     sys_timer_add(NULL, central_timer_handle_test2, 1000);
     sys_timer_add(NULL, central_timer_handle_test, 10); 
-    sys_timer_add(NULL, central_timer_handle_test3, 5);
-    sys_timer_add(NULL, central_timer_handle_test4, 500);
+    sys_timer_add(NULL, central_timer_handle_test3, 200);
+    // sys_timer_add(NULL, central_timer_handle_test4, 500);
 #if TCFG_CHARGE_ENABLE
     set_charge_event_flag(1);
 #endif
