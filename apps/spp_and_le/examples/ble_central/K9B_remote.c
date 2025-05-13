@@ -79,14 +79,13 @@ uint8_t rd_K9B_flash_delete(uint32_t Mac_K9B_save)
 		printf("don't find this mac to delete \n");
 		return 0;
 	}
-	else
+	for (int i = check_saved; i < MAX_NUM_K9ONOFF - 1; i++)
 	{
-		for (int i = check_saved; i < MAX_NUM_K9ONOFF - 1; i++)
-		{
-			rd_Flash_K9BData_Val.MacK9B[i] = rd_Flash_K9BData_Val.MacK9B[i + 1];
-		}
-		rd_Flash_K9BData_Val.total--;
+		rd_Flash_K9BData_Val.MacK9B[i] = rd_Flash_K9BData_Val.MacK9B[i + 1];
 	}
+	rd_Flash_K9BData_Val.total--;
+	int ret2 = syscfg_write(CFG_VM_RD_K9B, &rd_Flash_K9BData_Val.Factory_Check, sizeof(rd_Flash_K9BData_Val));
+	printf("flash K9B save [write:%d]\n", ret2);
 	return 1;
 }
 
@@ -97,7 +96,7 @@ return -1 when this MAC don't save yet
 */
 static int RD_K9B_SaveOnOff_yet(uint32_t mac_check)
 {
-	for (int i = 0; i < rd_Flash_K9BData_Val.total; i++)
+	for (int i = rd_Flash_K9BData_Val.total - 1; i >= 0; i--)
 	{
 		if (rd_Flash_K9BData_Val.MacK9B[i] == mac_check)
 		{
@@ -172,7 +171,8 @@ static void rd_K9B_set_ctrl_V2(uint8_t button_id, uint32_t counter)
 		/*----------------- set dim by counter of K9B mess------------------------------*/
 		// if(button_id != button_id_last)	counter_keep ++;
 
-		level_dim_set = get_dim_level_by_counter(counter);
+		if (button_id == button_id_last)
+			level_dim_set = get_dim_level_by_counter(counter);
 		rd_light_set_dim_cct100(level_dim_set, level_cct_set);
 	}
 	else
@@ -183,8 +183,6 @@ static void rd_K9B_set_ctrl_V2(uint8_t button_id, uint32_t counter)
 	printf("k9b set dim:%d - cct:%d", level_dim_set, level_cct_set);
 	button_id_last = button_id;
 }
-
-
 
 void rd_init_queue_message(void)
 {
@@ -199,7 +197,7 @@ void rd_send_message_to_queue(uint32_t macDevice, uint8_t key, uint32_t counter,
 	message.counter = counter;
 	message.type = type;
 
-	if (rd_enqueue(&queue_mess,(void* ) &message) == 0)
+	if (rd_enqueue(&queue_mess, (void *)&message) == 0)
 	{
 		printf("enqueue success\n");
 	}
@@ -208,7 +206,6 @@ void rd_send_message_to_queue(uint32_t macDevice, uint8_t key, uint32_t counter,
 		printf("enqueue fail\n");
 	}
 }
-
 
 void add_k9b_handle(message_t message)
 {
@@ -246,7 +243,6 @@ event_handle_t event_handle[] = {
 message_t message_last;
 uint8_t count_add = 0;
 uint8_t count_del = 0;
-static uint32_t clockTime_ThisMacLast[MAX_NUM_K9ONOFF] = {0};
 static uint32_t lastTick_addOrDel = 0;
 
 uint8_t rd_filter_mess(message_t message)
@@ -262,15 +258,19 @@ uint8_t rd_filter_mess(message_t message)
 	}
 
 	int index = RD_K9B_SaveOnOff_yet(mac);
-	if (index == -1 && sys_timer_get_ms() < 60 * 1000)
+	if (index == -1)
 	{
-		if ((3 == type) && (0b011 == key))
+		if (sys_timer_get_ms() < 60 * 1000)
 		{
-			count_add++;
-			if (count_add == NUM_PRESS_TO_PAIR)
+			if ((3 == type) && (0b011 == key))
 			{
-				lastTick_addOrDel = sys_timer_get_ms();
-				return MSG_ADD_K9B;
+				count_add++;
+				if (count_add == NUM_PRESS_TO_PAIR)
+				{
+					lastTick_addOrDel = sys_timer_get_ms();
+					count_add = 0;
+					return MSG_ADD_K9B;
+				}
 			}
 		}
 	}
@@ -285,14 +285,14 @@ uint8_t rd_filter_mess(message_t message)
 				{
 					lastTick_addOrDel = sys_timer_get_ms();
 					rd_K9B_flash_delete(mac);
+					count_del = 0;
 					return MSG_DELETE_K9B;
 				}
 			}
 		}
 
-		if (sys_timer_get_ms() - clockTime_ThisMacLast[index] >= 300 && sys_timer_get_ms() - lastTick_addOrDel >= 2000)
+		if (sys_timer_get_ms() - lastTick_addOrDel >= 2000)
 		{
-			clockTime_ThisMacLast[index] = sys_timer_get_ms();
 			return MSG_CTRL_K9B;
 		}
 	}
