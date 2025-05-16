@@ -73,8 +73,8 @@ void app_var_init(void)
     app_var.play_poweron_tone = 1;
 
     app_var.auto_off_time =  TCFG_AUTO_SHUT_DOWN_TIME;
-    app_var.warning_tone_v = 340;
-    app_var.poweroff_tone_v = 300;
+    app_var.warning_tone_v = 350;
+    app_var.poweroff_tone_v = 200;
 }
 
 __attribute__((weak))
@@ -158,6 +158,7 @@ void app_main()
 {
     struct intent it;
 
+    app_var_init();
     if (!UPDATE_SUPPORT_DEV_IS_NULL()) {
         int update = 0;
         update = update_result_deal();
