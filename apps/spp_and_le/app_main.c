@@ -73,7 +73,7 @@ void app_var_init(void)
     app_var.play_poweron_tone = 1;
 
     app_var.auto_off_time =  TCFG_AUTO_SHUT_DOWN_TIME;
-    app_var.warning_tone_v = 340;
+    app_var.warning_tone_v = 350;
     app_var.poweroff_tone_v = 300;
 }
 
@@ -184,6 +184,7 @@ void app_main()
         update = update_result_deal();
     }
 
+    app_var_init();
     printf(">>>>>>>>>>>>>>>>>app_main...\n");
     printf(">>> v220,2022-11-23 >>>\n");
 

@@ -356,9 +356,11 @@ static void rd_K9B_set_ctrl_V2(uint8_t button_id, uint32_t counter){
 	uint16_t level_dim_set = DIM_LEVEL3;
 	uint16_t level_cct_set = CCT_LEVEL3;
 
+	static type_but = 0;
 	if( (0b100 ==button_id) || (0b010 == button_id) || (0b001 == button_id)){  // single button press
 		//  control dim/cct
 
+	
 		/*----------------- set cct by button id ------------------------------*/
 		switch (button_id) 
 		{
@@ -377,14 +379,18 @@ static void rd_K9B_set_ctrl_V2(uint8_t button_id, uint32_t counter){
 		}
 
 		/*----------------- set dim by counter of K9B mess------------------------------*/
-		level_dim_set = get_dim_level_by_counter(counter);
+		if(type_but == 1) level_dim_set = DIM_LEVEL3;
+		if(button_id== button_id_last)	level_dim_set = get_dim_level_by_counter(counter);
+		rd_light_set_dim_cct100(level_dim_set, level_cct_set);
+		type_but = 0;
 	}
 	else{ // 2 or 3 button press
 		// controll off
-		level_dim_set = DIM_LEVEL0;
+		rd_light_set_dim_cct100(DIM_LEVEL0, level_cct_set);
 		level_cct_set = level_cct_last;
+		type_but = 1;
 	}
-	rd_light_set_dim_cct100(level_dim_set, level_cct_set);
+	// rd_light_set_dim_cct100(level_dim_set, level_cct_set);
 	
 	printf("k9b set dim:%d - cct:%d", level_dim_set, level_cct_set);
 	level_dim_last = level_dim_set;
