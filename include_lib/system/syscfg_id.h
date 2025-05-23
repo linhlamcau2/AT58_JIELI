@@ -129,6 +129,7 @@ u8 *syscfg_ptr_read(u16 item_id, u16 *len);
 #define 	CFG_USER_DEFINE_BEGIN		1
 #define     CFG_VM_RD_SETTING           2
 #define     CFG_VM_RD_K9B               3
+#define     CFG_VM_RD_TRAINING          4
 #define     CFG_VM_RD_POWERUP           48
 #define 	CFG_USER_DEFINE_END			49
 

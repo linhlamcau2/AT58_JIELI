@@ -17,6 +17,8 @@
 
 #include "examples/ble_central/rd_light_common.h"
 #include "examples/ble_central/K9B_remote.h"
+#include "examples/ble_central/training_cycle.h"
+
 #if TCFG_KWS_VOICE_RECOGNITION_ENABLE
 #include "jl_kws/jl_kws_api.h"
 #endif /* #if TCFG_KWS_VOICE_RECOGNITION_ENABLE */
@@ -148,11 +150,6 @@ static void central_timer_handle_test2(void)
     log_info("task main %d- Wdt:%d \n", sys_timer_get_ms(), wdt_get_time());
 
     rd_blink_led();
-    // static uint8_t stt = 0;
-    // stt = !stt;
-    // gpio_write(PIN_TEST,0);
-    // gpio_write(DETECT_POWER_PIN,stt);
-   
 }
 void app_main()
 {
@@ -259,11 +256,18 @@ void app_main()
 
     rd_light_init();
 
+    if(training_cycle_is_ended())
+    {
     //rd_light_set_dim_cct100(4, rd_flash_get_cct());
-    sys_timer_add(NULL, central_timer_handle_test2, 1000);
-    sys_timer_add(NULL, central_timer_handle_test, 10); 
-    sys_timer_add(NULL, central_timer_handle_test3, 5);
-    sys_timer_add(NULL, central_timer_handle_test4, 500);
+        sys_timer_add(NULL, central_timer_handle_test2, 1000);
+        sys_timer_add(NULL, central_timer_handle_test, 10); 
+        // sys_timer_add(NULL, central_timer_handle_test3, 5);
+        sys_timer_add(NULL, central_timer_handle_test4, 500);
+    }
+    else
+    {
+        sys_timer_add(NULL,training_cycle_task,10);
+    }
 #if TCFG_CHARGE_ENABLE
     set_charge_event_flag(1);
 #endif

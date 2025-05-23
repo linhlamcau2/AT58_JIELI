@@ -33,11 +33,11 @@
 #define CCT_POWERUP_DF CCT_LEVEL1
 #define PWM_HZ          2000
 
-#define TIMEOUT_CHANGE_CCT_MS 		6000
+#define TIMEOUT_CHANGE_CCT_MS 		5000
 #define FLASH_INITED_CODE 0x5A5A5A5A // code check flash inited
 
 
-#define CHANGE_CCT_BY_GPIO_EN 1 // 0: disable, 1: enable
+#define CHANGE_CCT_BY_GPIO_EN 0 // 0: disable, 1: enable
 typedef struct 
 {
     uint16_t dim_present;
@@ -50,12 +50,13 @@ typedef struct
 {
 	uint32_t Factory_Check;
 	uint32_t eraser_counter; // count number of erase
-	uint32_t dim_last;
 	uint32_t cct_last;
 	uint32_t timeout_powerup_flag; 
+	uint32_t count_reset_continuous;
 	/* data */
 } rd_Flash_powerUp_data_t;
 
+uint16_t dim_cct_2_pwm(uint8_t dim_cct100);
 void rd_light_init(void);
 void rd_light_set_dim_cct100(uint8_t dim100_set, uint8_t cct100_set);
 void rd_light_set_dim100(uint8_t dim100_set);
