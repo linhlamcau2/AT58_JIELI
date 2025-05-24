@@ -33,9 +33,9 @@
 #define CCT_POWERUP_DF CCT_LEVEL1
 #define PWM_HZ          2000
 
-#define TIMEOUT_CHANGE_CCT_MS 		5000
+#define TIMEOUT_CHANGE_CCT_MS 		5500
 #define FLASH_INITED_CODE 0x5A5A5A5A // code check flash inited
-
+#define NUM_RESET_KEEP_CCT			5
 
 #define CHANGE_CCT_BY_GPIO_EN 0 // 0: disable, 1: enable
 typedef struct 

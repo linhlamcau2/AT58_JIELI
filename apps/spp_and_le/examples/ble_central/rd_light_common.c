@@ -277,8 +277,16 @@ void rd_flash_powerup_init(void)
     }
     printf("cct_last:%d - eraser_counter:%d\n", rd_Flash_powerup_Val.cct_last, rd_Flash_powerup_Val.eraser_counter);
 
-    if (rd_Flash_powerup_Val.timeout_powerup_flag)
+    if(rd_Flash_powerup_Val.count_reset_continuous >= NUM_RESET_KEEP_CCT)
     {
+        rd_Flash_powerup_Val.count_reset_continuous = 0;
+        rd_Flash_powerup_Val.cct_last = CCT_LEVEL1;
+        rd_Flash_powerup_Val.timeout_powerup_flag = 0;
+        rd_flash_save_cct(rd_Flash_powerup_Val.cct_last);
+    }
+    else if (rd_Flash_powerup_Val.timeout_powerup_flag)
+    {
+        rd_Flash_powerup_Val.count_reset_continuous ++;
         rd_Flash_powerup_Val.cct_last = get_next_cct_level(rd_Flash_powerup_Val.cct_last);
         printf("Set next cct level:%d\n", rd_Flash_powerup_Val.cct_last);
         rd_flash_save_cct(rd_Flash_powerup_Val.cct_last);
@@ -289,6 +297,7 @@ void rd_flash_save_timeOutFlag(uint8_t flag)
 {
     rd_Flash_powerup_Val.timeout_powerup_flag = flag;
     rd_Flash_powerup_Val.eraser_counter++;
+    if(!flag) rd_Flash_powerup_Val.count_reset_continuous = 0;
     syscfg_write(CFG_VM_RD_POWERUP, &rd_Flash_powerup_Val, sizeof(rd_Flash_powerup_Val));
     printf("save time out flag:%d\n", flag);
 }

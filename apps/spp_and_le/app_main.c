@@ -23,8 +23,8 @@
 #include "jl_kws/jl_kws_api.h"
 #endif /* #if TCFG_KWS_VOICE_RECOGNITION_ENABLE */
 
-#define LOG_TAG_CONST       APP
-#define LOG_TAG             "[APP]"
+#define LOG_TAG_CONST APP
+#define LOG_TAG "[APP]"
 #define LOG_ERROR_ENABLE
 #define LOG_DEBUG_ENABLE
 #define LOG_INFO_ENABLE
@@ -34,53 +34,54 @@
 
 /*任务列表 */
 const struct task_info task_info_table[] = {
-    {"app_core",            1,     0,   640,   128  },
-    {"sys_event",           7,     0,   256,   0    },
-    {"btctrler",            4,     0,   512,   256  },
-    {"btencry",             1,     0,   512,   128  },
-    {"btstack",             3,     0,   768,   256   },
-    {"systimer",		    7,	   0,   128,   0	},
-    {"update",				1,	   0,   512,   0    },
-    {"dw_update",		 	2,	   0,   256,   128  },
+    {"app_core", 1, 0, 640, 128},
+    {"sys_event", 7, 0, 256, 0},
+    {"btctrler", 4, 0, 512, 256},
+    {"btencry", 1, 0, 512, 128},
+    {"btstack", 3, 0, 768, 256},
+    {"systimer", 7, 0, 128, 0},
+    {"update", 1, 0, 512, 0},
+    {"dw_update", 2, 0, 256, 128},
 #if (RCSP_BTMATE_EN)
-    {"rcsp_task",		    2,	   0,   640,	0},
+    {"rcsp_task", 2, 0, 640, 0},
 #endif
-#if(USER_UART_UPDATE_ENABLE)
-    {"uart_update",	        1,	   0,   256,   128	},
+#if (USER_UART_UPDATE_ENABLE)
+    {"uart_update", 1, 0, 256, 128},
 #endif
 #if (XM_MMA_EN)
-    {"xm_mma",   		    2,	   0,   640,   256	},
+    {"xm_mma", 2, 0, 640, 256},
 #endif
-    {"usb_msd",           	1,     0,   512,   128  },
+    {"usb_msd", 1, 0, 512, 128},
 #if TCFG_AUDIO_ENABLE
-    {"audio_dec",           3,     0,   768,   128  },
-    {"audio_enc",           4,     0,   512,   128  },
-#endif/*TCFG_AUDIO_ENABLE*/
+    {"audio_dec", 3, 0, 768, 128},
+    {"audio_enc", 4, 0, 512, 128},
+#endif /*TCFG_AUDIO_ENABLE*/
 #if TCFG_KWS_VOICE_RECOGNITION_ENABLE
-    {"kws",                 2,     0,   256,   64   },
+    {"kws", 2, 0, 256, 64},
 #endif /* #if TCFG_KWS_VOICE_RECOGNITION_ENABLE */
 #if (TUYA_DEMO_EN)
-    {"user_deal",           7,     0,   512,   512  },//定义线程 tuya任务调度
+    {"user_deal", 7, 0, 512, 512}, // 定义线程 tuya任务调度
 #endif
 #if (CONFIG_APP_HILINK)
-    {"hilink_task",         2,     0,   1024,   0},//定义线程 hilink任务调度
+    {"hilink_task", 2, 0, 1024, 0}, // 定义线程 hilink任务调度
 #endif
     {0, 0},
 };
-static u8 rd_flash_data[512] __attribute__ ((aligned(4)));
+static u8 rd_flash_data[512] __attribute__((aligned(4)));
 APP_VAR app_var;
 
 void app_var_init(void)
 {
     app_var.play_poweron_tone = 1;
 
-    app_var.auto_off_time =  TCFG_AUTO_SHUT_DOWN_TIME;
+    app_var.auto_off_time = TCFG_AUTO_SHUT_DOWN_TIME;
     app_var.warning_tone_v = 350;
     app_var.poweroff_tone_v = 200;
 }
 
 __attribute__((weak))
-u8 get_charge_online_flag(void)
+u8
+get_charge_online_flag(void)
 {
     return 0;
 }
@@ -91,20 +92,25 @@ void check_power_on_key(void)
 #if TCFG_POWER_ON_NEED_KEY
 
     u32 delay_10ms_cnt = 0;
-    while (1) {
+    while (1)
+    {
         clr_wdt();
         os_time_dly(1);
 
         extern u8 get_power_on_status(void);
-        if (get_power_on_status()) {
+        if (get_power_on_status())
+        {
             log_info("+");
             delay_10ms_cnt++;
-            if (delay_10ms_cnt > 70) {
+            if (delay_10ms_cnt > 70)
+            {
                 /* extern void set_key_poweron_flag(u8 flag); */
                 /* set_key_poweron_flag(1); */
                 return;
             }
-        } else {
+        }
+        else
+        {
             log_info("-");
             delay_10ms_cnt = 0;
             log_info("enter softpoweroff\n");
@@ -128,24 +134,25 @@ static void central_timer_handle_test(void)
 
     rd_light_check_ctrl_pwm();
     rd_light_check_save_cct();
-    
-    #if(CHANGE_CCT_BY_GPIO_EN)
-    //   rd_light_check_CCT_Pin(); // change cct by GPIO when power off
-    #endif
-} 
+
+#if (CHANGE_CCT_BY_GPIO_EN)
+//   rd_light_check_CCT_Pin(); // change cct by GPIO when power off
+#endif
+}
 
 static void central_timer_handle_test2(void)
 {
-    static u8 led_stt_last =2;
-    static u16 dim_stt_last =0;
-    static u8 set_ctrl_df =0;
-    if((set_ctrl_df == 0) && (sys_timer_get_ms() > 500)){ //START_DIM_AFTER_POWERUP_MS)){
-        set_ctrl_df =1;
+    static u8 led_stt_last = 2;
+    static u16 dim_stt_last = 0;
+    static u8 set_ctrl_df = 0;
+    if ((set_ctrl_df == 0) && (sys_timer_get_ms() > 500))
+    { // START_DIM_AFTER_POWERUP_MS)){
+        set_ctrl_df = 1;
         rd_light_set_dim_cct100(DIM_POWERUP_DF, rd_flash_get_cct());
     }
 
-    if((sys_timer_get_ms() > 5000)){ //START_DIM_AFTER_POWERUP_MS)){
-
+    if ((sys_timer_get_ms() > 5000))
+    { // START_DIM_AFTER_POWERUP_MS)){
     }
     log_info("task main %d- Wdt:%d \n", sys_timer_get_ms(), wdt_get_time());
 
@@ -156,7 +163,8 @@ void app_main()
     struct intent it;
 
     app_var_init();
-    if (!UPDATE_SUPPORT_DEV_IS_NULL()) {
+    if (!UPDATE_SUPPORT_DEV_IS_NULL())
+    {
         int update = 0;
         update = update_result_deal();
     }
@@ -164,11 +172,14 @@ void app_main()
     printf(">>>>>>>>>>>>>>>>>app_main...\n");
     printf(">>> v220,2022-11-23 >>>\n");
 
-    if (get_charge_online_flag()) {
-#if(TCFG_SYS_LVD_EN == 1)
+    if (get_charge_online_flag())
+    {
+#if (TCFG_SYS_LVD_EN == 1)
         vbat_check_init();
 #endif
-    } else {
+    }
+    else
+    {
         check_power_on_voltage();
     }
 
@@ -181,7 +192,7 @@ void app_main()
     extern int audio_enc_init();
     audio_dec_init();
     audio_enc_init();
-#endif/*TCFG_AUDIO_ENABLE*/
+#endif /*TCFG_AUDIO_ENABLE*/
 
 #if TCFG_KWS_VOICE_RECOGNITION_ENABLE
     jl_kws_main_user_demo();
@@ -241,11 +252,11 @@ void app_main()
     it.name = "conn_24g";
     it.action = ACTION_CONN_24G_MAIN;
 #else
-    while (1) {
+    while (1)
+    {
         printf("no app!!!");
     }
 #endif
-
 
     log_info("run app>>> %s", it.name);
     log_info("%s,%s", __DATE__, __TIME__);
@@ -253,20 +264,21 @@ void app_main()
 
     put_buf(rd_flash_data, 16);
 
-
     rd_light_init();
 
-    if(training_cycle_is_ended())
+    if (training_cycle_is_ended())
     {
-    //rd_light_set_dim_cct100(4, rd_flash_get_cct());
         sys_timer_add(NULL, central_timer_handle_test2, 1000);
-        sys_timer_add(NULL, central_timer_handle_test, 10); 
-        // sys_timer_add(NULL, central_timer_handle_test3, 5);
+        sys_timer_add(NULL, central_timer_handle_test, 10);
+#if (CHANGE_CCT_BY_GPIO_EN)
+        sys_timer_add(NULL, central_timer_handle_test3, 5);
+#endif
+        
         sys_timer_add(NULL, central_timer_handle_test4, 500);
     }
     else
     {
-        sys_timer_add(NULL,training_cycle_task,10);
+        sys_timer_add(NULL, training_cycle_task, 10);
     }
 #if TCFG_CHARGE_ENABLE
     set_charge_event_flag(1);
@@ -285,7 +297,8 @@ void app_switch(const char *name, int action)
 
     init_intent(&it);
     app = get_current_app();
-    if (app) {
+    if (app)
+    {
         /*
          * 退出当前app, 会执行state_machine()函数中APP_STA_STOP 和 APP_STA_DESTORY
          */
@@ -305,8 +318,8 @@ void app_switch(const char *name, int action)
 int eSystemConfirmStopStatus(void)
 {
     /* 系统进入在未来时间里，无任务超时唤醒，可根据用户选择系统停止，或者系统定时唤醒(100ms) */
-    //1:Endless Sleep
-    //0:100 ms wakeup
+    // 1:Endless Sleep
+    // 0:100 ms wakeup
     /* log_info("100ms wakeup"); */
     return 1;
 }
@@ -316,5 +329,3 @@ __attribute__((used)) int *__errno()
     static int err;
     return &err;
 }
-
-

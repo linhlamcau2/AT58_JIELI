@@ -56,8 +56,10 @@ void training_cycle_init(void)
 void training_cycle_stop()
 {
     training_status.is_running = 0;
+    training_status.cycle_start_time = 0;
     set_timer_pwm_duty(CCT_PWM_TIMER, dim_cct_2_pwm(CCT_LEVEL2));
     set_timer_pwm_duty(DIM_PWM_TIMER, dim_cct_2_pwm(10));
+    training_cycle_save_state();
 }
 
 static uint16_t count  = 0;
