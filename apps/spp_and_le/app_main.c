@@ -146,14 +146,11 @@ static void central_timer_handle_test2(void)
     static u16 dim_stt_last = 0;
     static u8 set_ctrl_df = 0;
     if ((set_ctrl_df == 0) && (sys_timer_get_ms() > 500))
-    { // START_DIM_AFTER_POWERUP_MS)){
+    {
         set_ctrl_df = 1;
         rd_light_set_dim_cct100(DIM_POWERUP_DF, rd_flash_get_cct());
     }
 
-    if ((sys_timer_get_ms() > 5000))
-    { // START_DIM_AFTER_POWERUP_MS)){
-    }
     log_info("task main %d- Wdt:%d \n", sys_timer_get_ms(), wdt_get_time());
 
     rd_blink_led();

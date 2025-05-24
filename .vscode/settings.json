@@ -5,7 +5,8 @@
         "rd_queue.h": "c",
         "norflash.h": "c",
         "rd_light_common.h": "c",
-        "training_cycle.h": "c"
+        "training_cycle.h": "c",
+        "includes.h": "c"
     },
     "idf.portWin": "COM30"
 }
