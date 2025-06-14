@@ -3089,6 +3089,7 @@ objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o
 -r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,rd_handle_queue_message,pl
 -r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,rd_dequeue,l
 -r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,memcpy,l
+-r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,rd_flash_get_cct,l
 -r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,rd_light_set_dim_cct100,l
 -r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,CODE_CHECK_FLASH,pl
 -r=objs/apps/spp_and_le/examples/ble_central/K9B_remote.c.o,rd_Flash_K9BData_Val,pl

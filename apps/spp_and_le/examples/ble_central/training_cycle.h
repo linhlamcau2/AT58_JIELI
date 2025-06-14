@@ -1,7 +1,7 @@
 #ifndef __TRAINING_CYCLE_H__
 #define __TRAINING_CYCLE_H__
 
-#define TRAINING_MODE 1
+#define TRAINING_MODE 0
 // Training cycle states
 #include <stdint.h>
 #include "system/includes.h"

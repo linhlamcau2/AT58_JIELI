@@ -146,10 +146,30 @@ static uint16_t get_dim_level_by_counter(uint32_t counter)
 
 static void rd_K9B_set_ctrl_V2(uint8_t button_id, uint32_t counter)
 {
+	static uint8_t init_flag = 0;
 	static uint8_t type_but =0;
 	static uint8_t button_id_last = 0;
 	static uint8_t level_dim_set = DIM_LEVEL3;
-	static uint8_t level_cct_set = CCT_LEVEL3;
+	static uint8_t level_cct_set = CCT_LEVEL1;
+
+	if(!init_flag)
+	{
+		init_flag = 1;
+		uint8_t cct_flash = rd_flash_get_cct();
+		if(cct_flash == CCT_LEVEL1)
+		{
+			button_id_last = 0b001;
+		}
+		else if(cct_flash == CCT_LEVEL2)
+		{
+			button_id_last = 0b010;
+			
+		}
+		else if(cct_flash == CCT_LEVEL3)
+		{
+			button_id_last = 0b100;
+		}
+	}
 
 	if ((0b100 == button_id) || (0b010 == button_id) || (0b001 == button_id))
 	{ // single button press
